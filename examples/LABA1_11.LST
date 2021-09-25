@@ -1,0 +1,68 @@
+Turbo Assembler	 Version 3.1	    17/11/08 18:26:20	    Page 1
+laba1_11.asm
+
+
+
+      1				     ;лабораторная №1
+      2	0000			     model small
+      3	0000			     .stack  100h
+      4	0000			     .data
+      5	      =000A		     len equ 10	     ;количество элементов в mas
+      6	0000  0A*(??)		     res   db	 10 dup(?)
+      7	000A			     .code
+      8	0000			     start:
+      9	0000  B8 0000s			     mov     ax,@data
+     10	0003  8E D8			     mov     ds,ax
+     11	0005  B9 000A			     mov     cx,len  ;длину поля mas в cx
+     12	0008  33 F6			     xor si,si
+     13	000A  E3 0D			     jcxz    exit    ;проверка cx на 0,	если 0,	то на выход
+     14	000C			     cycl:
+     15	000C  33 C0			     xor ax,ax
+     16	000E  8B C6			     mov ax,si
+     17	0010  F7 E6			     mul si
+     18	0012  88 84 0000r		     mov res[si],al
+     19	0016			     nxt:
+     20	0016  46			     inc si  ;перейти к	следующему элементу
+     21	0017  E2 F3			     loop cycl
+     22	0019			     exit:
+     23	0019  B8 4C00			     mov     ax,4c00h
+     24	001C  CD 21			     int     21h     ;возврат управления операционной системе
+     25				     end     start
+Turbo Assembler	 Version 3.1	    17/11/08 18:26:20	    Page 2
+Symbol Table
+
+
+
+
+Symbol Name		Type   Value			   Cref	(defined at #)
+
+??DATE			Text   "17/11/08"
+??FILENAME		Text   "laba1_11"
+??TIME			Text   "18:26:20"
+??VERSION		Number 030A
+@32BIT			Text   0			   #2
+@CODE			Text   _TEXT			   #2  #2  #7
+@CODESIZE		Text   0			   #2
+@CPU			Text   0101H
+@CURSEG			Text   _TEXT			   #4  #7
+@DATA			Text   DGROUP			   #2  9
+@DATASIZE		Text   0			   #2
+@FILENAME		Text   LABA1_11
+@INTERFACE		Text   00H			   #2
+@MODEL			Text   2			   #2
+@STACK			Text   DGROUP			   #2
+@WORDSIZE		Text   2			   #4  #7
+CYCL			Near   _TEXT:000C		   #14	21
+EXIT			Near   _TEXT:0019		   13  #22
+LEN			Number 000A			   #5  11
+NXT			Near   _TEXT:0016		   #19
+RES			Byte   DGROUP:0000		   #6  18
+START			Near   _TEXT:0000		   #8  25
+
+Groups & Segments	Bit Size Align	Combine	Class	   Cref	(defined at #)
+
+DGROUP			Group				   #2  2  9
+  STACK			16  0100 Para	Stack	STACK	   #3
+  _DATA			16  000A Word	Public	DATA	   #2  #4
+_TEXT			16  001E Word	Public	CODE	   #2  2  #7  7
+

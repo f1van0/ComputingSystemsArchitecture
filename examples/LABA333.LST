@@ -1,0 +1,144 @@
+Turbo Assembler	 Version 3.1	    11/12/12 18:20:18	    Page 1
+laba333.asm
+
+
+
+      1	0000			     model small
+      2	0000			     .stack 100h
+      3	0000			     .data
+      4	0000			     .code
+      5
+      6	0000			     tyu proc near
+      7	0000  B4 01		     mov ah,01
+      8	0002  B5 00		     mov ch,00
+      9	0004  B1 07		     mov cl,7
+     10	0006  CD 10		     int 10h
+     11
+     12	0008  B4 02		     mov ah,02
+     13	000A  B7 00		     mov bh,00
+     14	000C  B6 13		     mov dh,19 ; y
+     15	000E  CD 10		     int 10h
+     16
+     17	0010  B4 03		     mov ah,03 ; положение курсора
+     18	0012  B7 00		     mov bh,00
+     19	0014  CD 10		     int 10h
+     20
+     21	0016  B4 09		     mov ah,09 ; вывод
+     22	0018  B0 03		     mov al,03H
+     23	001A  B7 00		     mov bh,00
+     24	001C  B3 01		     mov bl,1
+     25	001E  B9 0001		     mov cx,01
+     26	0021  CD 10		     int 10h
+     27
+     28	0023  B6 13		     mov dh,19
+     29	0025  BE 0000		     mov si,0
+     30	0028			     cicl:
+     31	0028  B4 02		     mov ah,02 ; положение курсора
+     32	002A  B7 00		     mov bh,00
+     33	002C  CD 10		     int 10h
+     34	002E  FE C6		     inc dh
+     35	0030  80 FE 1B		     cmp dh,27
+     36	0033  76 F3		     jbe cicl
+     37	0035  C3		     ret
+     38	0036			     tyu endp
+     39
+     40	0036			     gorizont proc near
+     41	0036  B4 01		     MOV  AH,01	    ;Установить	размер курсора
+     42	0038  B5 00		     MOV  CH,00	    ;Верхняя линия сканирования
+     43	003A  B1 07		     MOV  CL,7	   ;Нижняя линия сканирования
+     44	003C  CD 10		     int 10h
+     45	003E  B4 02		     MOV AH,02		;Установить положение курсора
+     46	0040  B7 00		     MOV BH,00		;Страница 0
+     47	0042  B2 23		     MOV DL,35	   ;Столбец
+     48	0044  CD 10		     int 10h
+     49
+     50	0046  B4 09		     mov ah,09
+     51	0048  B0 03		     mov al,03H
+     52	004A  B7 00		     mov bh,00
+     53	004C  B3 01		     mov bl,1
+     54	004E  B9 000A		     mov cx,10
+     55	0051  CD 10		     int 10h
+     56	0053  C3		     ret
+     57	0054			     gorizont endp
+Turbo Assembler	 Version 3.1	    11/12/12 18:20:18	    Page 2
+laba333.asm
+
+
+
+     58
+     59
+     60	0054			     START:
+     61	0054  B8 0000s		     mov ax,@data
+     62	0057  8E D8		       mov ds,ax
+     63
+     64	0059  B4 00		     mov ah,00
+     65	005B  B0 03		     mov al,03
+     66	005D  CD 10		     int 10h
+     67
+     68	005F  B4 05		     mov ah,05;Установить активную страницу
+     69	0061  B0 00		     mov al,0
+     70	0063  CD 10		     int 10h
+     71
+     72	0065  B4 01		     mov ah,01;Установить размер курсора
+     73	0067  B5 00		     mov ch,00 ;Верхняя	линия сканирования
+     74	0069  B1 07		     mov cl,7;Нижняя линия сканирования
+     75	006B  CD 10		     int 10h
+     76	006D  B4 02		     mov ah,02;Установить положение курсора
+     77	006F  B7 00		     mov bh,00;Страница	0
+     78	0071  B6 12		      mov dh,18;Строка
+     79	0073  B2 23		     mov dl,35;Столбец
+     80	0075  CD 10		     int 10h
+     81	0077  B4 03		     mov ah,03
+     82	0079  B7 00		     mov bh,00
+     83	007B  CD 10		     int 10h
+     84
+     85	007D  B4 04		     mov ah,4
+     86	007F  CD 10		     int 10h
+     87
+     88	0081  B2 23		     mov dl,35
+     89	0083  E8 FF7A		     call tyu
+     90	0086  B2 2D		     mov dl,45
+     91	0088  E8 FF75		     call tyu
+     92	008B  B6 12		     mov dh,18
+     93	008D  E8 FFA6		     call gorizont
+     94	0090  B6 1C		     mov dh,28
+     95	0092  E8 FFA1		     call gorizont
+     96	0095  B8 4C00		     mov ax,4c00h
+     97	0098  CD 21		       int 21h
+     98				     end start
+Turbo Assembler	 Version 3.1	    11/12/12 18:20:18	    Page 3
+Symbol Table
+
+
+
+
+Symbol Name		Type   Value			   Cref	(defined at #)
+
+??DATE			Text   "11/12/12"
+??FILENAME		Text   "laba333	"
+??TIME			Text   "18:20:18"
+??VERSION		Number 030A
+@32BIT			Text   0			   #1
+@CODE			Text   _TEXT			   #1  #1  #4
+@CODESIZE		Text   0			   #1
+@CPU			Text   0101H
+@CURSEG			Text   _TEXT			   #3  #4
+@DATA			Text   DGROUP			   #1  61
+@DATASIZE		Text   0			   #1
+@FILENAME		Text   LABA333
+@INTERFACE		Text   00H			   #1
+@MODEL			Text   2			   #1
+@STACK			Text   DGROUP			   #1
+@WORDSIZE		Text   2			   #3  #4
+CICL			Near   _TEXT:0028		   #30	36
+GORIZONT		Near   _TEXT:0036		   #40	93  95
+START			Near   _TEXT:0054		   #60	98
+TYU			Near   _TEXT:0000		   #6  89  91
+
+Groups & Segments	Bit Size Align	Combine	Class	   Cref	(defined at #)
+
+DGROUP			Group				   #1  1  61
+  STACK			16  0100 Para	Stack	STACK	   #2
+  _DATA			16  0000 Word	Public	DATA	   #1  #3
+_TEXT			16  009A Word	Public	CODE	   #1  1  #4  4
+

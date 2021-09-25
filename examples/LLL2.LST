@@ -1,0 +1,113 @@
+Turbo Assembler	 Version 3.1	    09/03/13 14:10:44	    Page 1
+lll2.asm
+
+
+
+      1	0000			     model small
+      2	0000			     .stack 100h
+      3	0000			     .data
+      4	0000  00		     k db 0
+      5	      =0005		     n equ 5
+      6	      =0003		     m equ 3
+      7	0001			     .code
+      8	0000			     start:
+      9	0000  B8 0000s		     mov ax,@data
+     10	0003  8E D8		     mov ds,ax
+     11	0005  B8 0005		     mov ax,n
+     12	0008  1D 0003		     sbb ax,m
+     13	000B  E8 001D		     call fac
+     14	000E  50		     push ax
+     15	000F  B8 0003		     mov ax,m
+     16	0012  E8 0016		     call fac
+     17	0015  8B D0		     mov dx,ax
+     18	0017  58		     pop ax
+     19	0018  F7 E2		     mul dx
+     20	001A  50		     push ax
+     21	001B  B8 0005		     mov ax,n
+     22	001E  E8 000A		     call fac
+     23	0021  5A		     pop dx
+     24	0022  F6 F2		     div dl
+     25	0024  33 DB		     xor bx,bx
+     26	0026  8B C8		     mov cx,ax
+     27				     ;inc bx
+     28				     ;mov k,dl
+     29				     ;cycl1:
+     30				     ;cmp al,k
+     31				     ;je k1
+     32				     ;push ax
+     33				     ;mov al,k
+     34				     ;mul bx
+     35				     ;mov k,al
+     36				     ;pop ax
+     37				     ;inc bx
+     38				     ;loop cycl1
+     39				     ;k1:
+     40				     ;cycl2:
+     41				     ;cmp al,0
+     42				     ;jle k1
+     43				     ;sbb ax,dx
+     44				     ;inc bx
+     45				     ;loop cycl2
+     46				     ;k1:
+     47	0028  EB 11 90		     jmp m1
+     48	002B			     fac proc
+     49	002B  33 DB		     xor bx,bx
+     50	002D  BB 0001		     mov bx,1
+     51	0030  8B C8		     mov cx,ax
+     52	0032  B8 0001		     mov ax,1
+     53	0035			     cycl:
+     54	0035  F7 E3		     mul bx
+     55	0037  43		     inc bx
+     56	0038  E2 FB		     loop cycl
+     57	003A  C3		     ret
+Turbo Assembler	 Version 3.1	    09/03/13 14:10:44	    Page 2
+lll2.asm
+
+
+
+     58	003B			     fac endp
+     59	003B			     m1:
+     60	003B			     exit:
+     61	003B  B8 4C00		     mov ax,4c00h
+     62	003E  CD 21		     int 21h
+     63				     end start
+Turbo Assembler	 Version 3.1	    09/03/13 14:10:44	    Page 3
+Symbol Table
+
+
+
+
+Symbol Name		Type   Value			   Cref	(defined at #)
+
+??DATE			Text   "09/03/13"
+??FILENAME		Text   "lll2	"
+??TIME			Text   "14:10:44"
+??VERSION		Number 030A
+@32BIT			Text   0			   #1
+@CODE			Text   _TEXT			   #1  #1  #7
+@CODESIZE		Text   0			   #1
+@CPU			Text   0101H
+@CURSEG			Text   _TEXT			   #3  #7
+@DATA			Text   DGROUP			   #1  9
+@DATASIZE		Text   0			   #1
+@FILENAME		Text   LLL2
+@INTERFACE		Text   00H			   #1
+@MODEL			Text   2			   #1
+@STACK			Text   DGROUP			   #1
+@WORDSIZE		Text   2			   #3  #7
+CYCL			Near   _TEXT:0035		   #53	56
+EXIT			Near   _TEXT:003B		   #60
+FAC			Near   _TEXT:002B		   13  16  22  #48
+K			Byte   DGROUP:0000		   #4
+M			Number 0003			   #6  12  15
+M1			Near   _TEXT:003B		   47  #59
+N			Number 0005			   #5  11  21
+START			Near   _TEXT:0000		   #8  63
+
+Groups & Segments	Bit Size Align	Combine	Class	   Cref	(defined at #)
+
+DGROUP			Group				   #1  1  9
+  STACK			16  0100 Para	Stack	STACK	   #2
+  _DATA			16  0001 Word	Public	DATA	   #1  #3
+_TEXT			16  0040 Word	Public	CODE	   #1  1  #7  7
+

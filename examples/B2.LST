@@ -1,0 +1,164 @@
+Turbo Assembler	 Version 3.1	    16/04/12 13:33:19	    Page 1
+b2.asm
+
+
+
+      1	0000			     model small ;модель памяти
+      2	0000			     .stack 256	;размер	стека
+      3	0000			     .data
+      4	0000  ????			     timeCx dw ? ;временная переменная
+      5	0002  01 02 03 04 05 06	07+	     A db 1,2,3,4,5,6,7,8,9,11 ;массив А
+      6	      08 09 0B
+      7	000C  05 06 04 05 07 08	04+	     B db 5,6,4,5,7,8,4,3,2,1  ;массив B
+      8	      03 02 01
+      9	0016  0A*(00)			     C db 10 dup(0) ;результирующий массив
+     10	      =000A			     len equ 10	;длина массивов
+     11	0020			     .code
+     12	0000				     start:
+     13	0000  50 55 8B EC C7 46	02+		     push @data	;инициализируем	ds физическим адресом данных
+     14	      0000s 5D
+     15	000A  1F				     pop ds  ;через стек
+     16	000B  B9 000A				     mov cx,len	;ложим в сх длину
+     17	000E  33 F6				     xor si,si ;обнулили
+     18	0010  33 FF				     xor di,di ;обнулили
+     19	0012  33 C0				     xor ax,ax ;обнулили
+     20	0014				     for1:
+     21	0014  51				     push cx ;запомнили
+     22	0015  B9 000A				     mov cx,len	;ложим длину
+     23	0018  33 FF				     xor di,di ;обнулили
+     24	001A				     for2:
+     25	001A  8A 9C 0002r			     mov bl,A[si] ;берем элемент первого массива
+     26	001E  3A 9D 000Cr			     cmp bl,B[di] ;смотри, есть	ли во втором
+     27	0022  75 09				     jne metka ;если нет, то метка
+     28	0024  56				     push si ;если есть
+     29	0025  8B F0				     mov si,ax ;то ложим в результат
+     30	0027  88 9C 0016r			     mov C[si],bl ;через регистр
+     31	002B  40				     inc ax ;переходим к следующему
+     32	002C  5E				     pop si ;вспомнили si из стека
+     33	002D				     metka:
+     34	002D  47				     inc di ;увеличили di
+     35	002E  E2 EA			     loop for2 ;завершаем цикл
+     36	0030  59				     pop cx ;вспомнилил	сх
+     37	0031  46				     inc si ;увеличили si
+     38	0032  E2 E0			     loop for1 ;завершили цикл
+     39	0034  B9 000A				     mov cx,len	;ложим в сх длину
+     40	0037  33 F6				     xor si,si ;обнуляем si
+     41	0039  BB 0016r			     lea bx,C
+     42	003C  E8 0005			     call iskl ;вызываем процедуру
+     43	003F				     exit: ;выход
+     44	003F  B8 4C00				     mov ax,4c00h ;стандартный выход
+     45	0042  CD 21				     int 21h ;прерывание DOS
+     46	0044				     iskl proc ;процедура для исключения одинаковых элементов
+     47	0044				     cicl1: ;бежим по массиву
+     48	0044  51				     push cx  ;запомнили
+     49	0045  89 0E 0000r			     mov timeCx,cx  ;положили во временную переменую
+     50	0049  B9 000A				     mov cx,len	;установили на длину
+     51	004C  2B CE				     sub cx,si ;отняли то, что уже прошли
+     52	004E  8B FE				     mov di,si ;скопировали si в di
+     53	0050  56				     push si ;запомнили	в стек
+     54	0051				     cicl2:  ;бежим по массиву и ищем одинаковые элементы
+     55	0051  47				     inc di ;увеличили индекс
+     56	0052  8A 00				     mov al,[bx][si] ;положили в регистр текущий элемент массива
+     57	0054  51				     push cx  ;запомнили сх
+Turbo Assembler	 Version 3.1	    16/04/12 13:33:19	    Page 2
+b2.asm
+
+
+
+     58	0055  B9 000A				     mov cx,len	;положили в сх длину
+     59	0058  2B CF				     sub cx,di	;отняли	текущий	индекс
+     60	005A  56				     push si  ;запомнили si
+     61	005B  3A 01				     cmp al,[bx][di] ;скопировали в регистр
+     62	005D  57				     push di ;запомнили	di
+     63	005E  75 0E				     jne next ;если не равно то	на next
+     64	0060  FF 0E 0000r			     dec timeCx	;иначе уменьшили длину массива
+     65	0064				     cicl3:  ;сдвигаем все элементы влево
+     66	0064  8B F7				     mov si,di ;ложим в	si di
+     67	0066  47				     inc di ;увеличиваем
+     68	0067  8A 01				     mov al,[bx][di]  ;ложим следующий в al
+     69	0069  88 00				     mov [bx][si],al  ;ложим из	al в текущий
+     70	006B  46				     inc si ;переходим к следующему
+     71	006C  E2 F6			     loop cicl3	;конец цикла
+     72	006E				     next:
+     73	006E  5F				     pop di ;вспомнили из стека
+     74	006F  5E				     pop si ;вспомнили из стека
+     75	0070  59				     pop cx ;вспомнили из стека
+     76	0071  E2 DE			     loop cicl2	;конец цикла
+     77	0073  5E				     pop si ;вспомнили из стека
+     78	0074  59				     pop cx ;вспомнили из стека
+     79	0075  8B 0E 0000r			     mov cx,timeCx ;положили в сх текущую длину	массива
+     80	0079  46				     inc si ;увеличили
+     81	007A  E2 C8			     loop cicl1	 ;конец	цикла
+     82	007C  33 F6				     xor si,si ;обнулили
+     83	007E  33 FF				     xor di,di ;обнулили
+     84	0080  B9 000A				     mov cx,len	;положили длину
+     85	0083				     cicl: ;если два одинаковых	элемента рядом,	проще учесть этот случай отдельно
+     86	0083  8A 00				     mov al,[bx][si] ;берем элемент
+     87	0085  38 40 01				     cmp [bx][si+1],al ;сравниваем со следующим
+     88	0088  51				     push cx ;запомнили	сх
+     89	0089  75 0A				     jne n ;если не совпало, то	на n
+     90	008B				     incicl:  ;иначе
+     91	008B  8B FE				     mov di,si ;сдвигаем все, что справа
+     92	008D  47				     inc di ;увеличили
+     93	008E  8A 01				     mov al,[bx][di] ;берем последующий
+     94	0090  88 00				     mov [bx][si],al  ;заменяем	им текущий
+     95	0092  46				     inc si ;переходим к следующему
+     96	0093  E2 F6			     loop incicl ;конец	цикла
+     97	0095				     n:
+     98	0095  59				     pop cx ;вспомнили из стека
+     99	0096  46				     inc si ;увеличили
+    100	0097  E2 EA			     loop cicl ;конец цикла
+    101	0099  33 F6				     xor si,si ;обнулили
+    102	009B  C3			     ret ;возврат
+    103	009C				     iskl endp ;конец процедуры
+    104				     end start ;метка старт - вход в программу
+Turbo Assembler	 Version 3.1	    16/04/12 13:33:19	    Page 3
+Symbol Table
+
+
+
+
+Symbol Name		Type   Value			   Cref	(defined at #)
+
+??DATE			Text   "16/04/12"
+??FILENAME		Text   "b2	"
+??TIME			Text   "13:33:19"
+??VERSION		Number 030A
+@32BIT			Text   0			   #1
+@CODE			Text   _TEXT			   #1  #1  #11
+@CODESIZE		Text   0			   #1
+@CPU			Text   0101H
+@CURSEG			Text   _TEXT			   #3  #11
+@DATA			Text   DGROUP			   #1  13
+@DATASIZE		Text   0			   #1
+@FILENAME		Text   B2
+@INTERFACE		Text   00H			   #1
+@MODEL			Text   2			   #1
+@STACK			Text   DGROUP			   #1
+@WORDSIZE		Text   2			   #3  #11
+A			Byte   DGROUP:0002		   #5  25
+B			Byte   DGROUP:000C		   #7  26
+C			Byte   DGROUP:0016		   #9  30  41
+CICL			Near   _TEXT:0083		   #85	100
+CICL1			Near   _TEXT:0044		   #47	81
+CICL2			Near   _TEXT:0051		   #54	76
+CICL3			Near   _TEXT:0064		   #65	71
+EXIT			Near   _TEXT:003F		   #43
+FOR1			Near   _TEXT:0014		   #20	38
+FOR2			Near   _TEXT:001A		   #24	35
+INCICL			Near   _TEXT:008B		   #90	96
+ISKL			Near   _TEXT:0044		   42  #46
+LEN			Number 000A			   #10	16  22	39  50	58  84
+METKA			Near   _TEXT:002D		   27  #33
+N			Near   _TEXT:0095		   89  #97
+NEXT			Near   _TEXT:006E		   63  #72
+START			Near   _TEXT:0000		   #12	104
+TIMECX			Word   DGROUP:0000		   #4  49  64  79
+
+Groups & Segments	Bit Size Align	Combine	Class	   Cref	(defined at #)
+
+DGROUP			Group				   #1  1  13
+  STACK			16  0100 Para	Stack	STACK	   #2
+  _DATA			16  0020 Word	Public	DATA	   #1  #3
+_TEXT			16  009C Word	Public	CODE	   #1  1  #11  11
+

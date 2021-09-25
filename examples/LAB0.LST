@@ -1,0 +1,129 @@
+Turbo Assembler	 Version 3.1	    22/04/13 16:54:15	    Page 1
+lab0.asm
+
+
+
+      1					 .386
+      2	00000000			 .model	use32 flat
+      3	00000000			 .data
+      4	00000000  4195999A			 x dd 18.7
+      5	00000004  4059999A			 a dd 3.4
+      6	00000008  00000000			 y dd 0
+      7
+      8	0000000C  ????				 cwr dw	?
+      9
+     10	0000000E  0025 000E 0005 0004 +		 mas dw	37,14,5,4,6,17,2
+     11		  0006 0011 0002
+     12
+     13	0000001C			 .code
+     14	00000000				 _main:
+     15	00000000  9B DB	E3				 finit
+     16
+     17	00000003  DF 05	00000011r			 fild mas[3]
+     18	00000009  D9 FF					 fcos				 ;st(0)=cos(4)
+     19	0000000B  DF 05	0000000Fr			 fild mas[1]			 ;st(0)=14 st(1)=cos(4)
+     20	00000011  DE 0D	00000010r			 fimul mas[2]			 ;st(0)=14*5
+     21	00000017  DE 05	0000000Er			 fiadd mas			 ;st(0)=37+14*5
+     22	0000001D  DE F9					 fdiv				 ;st(0)= 37+14*5/cos(4)
+     23
+     24	0000001F  DF 05	00000010r			 fild mas[2]			 ;st(0)= 5 st(1)=(37+14*5)/cos(4)
+     25	00000025  DE 0D	00000012r			 fimul mas[4]			 ;st(0)=5*6
+     26	0000002B  D9 05	00000000r			 fld x				 ;st(0)=x st(1)=5*6 st(2)=(37+14*5)/cos(4)
+     27	00000031  DE C9					 fmul				 ;st(0)=x*5*6 st(1)=(37+14*5)/cos(4)
+     28
+     29	00000033  DE C1					 fadd				 ;st(0)=(37+14*5)/cos(4)+x*5*6
+     30	00000035  DF 05	00000011r			 fild mas[3]			 ;st(0)=4 st(1)=(37+14*5)/cos(4)+x*5*6
+     31	0000003B  DE 35	00000014r			 fidiv mas[6]			 ;st(0)=4/2
+     32	00000041  DF 05	00000013r			 fild mas[5]			 ;st(0)=17 st(1)=4/2 st(2)=(37+14*5)/cos(4) +
+     33					 +x*5*6
+     34	00000047  DE E9					 fsub				 ;st(0)=17-4/2 st(1)=(37+14*5)/cos(4)+x*5*6
+     35	00000049  D9 C9					 fxch st(1)			 ;st(0)=(37+14*5)/cos(4)+x*5*6 st(1)=17-4/2
+     36	0000004B  DE F9					 fdiv				 ;st(0)=[(37+14*5)/cos(4)+x*5*6]/[17-4/2]
+     37
+     38	0000004D  DF 05	00000010r			 fild mas[2]			 ;st(0)=5 st(1)=[(37+14*5)/cos(4)+x*5*6]/   +
+     39					 [17-4/2]
+     40	00000053  DE 0D	00000012r			 fimul mas[4]			 ;st(0)=5*6
+     41	00000059  D9 05	00000004r			 fld a				 ;st(0)=a st(1)=5*6 st(2)=[(37+14*5)/cos(4) +
+     42					 +x*5*6]/[17-4/2]
+     43
+     44							 ; exp(st(0))
+     45	0000005F  D9 EA					 fldl2e
+     46	00000061  DE C9					 fmulp st(1), st(0)		 ; st(0) := log2(exp^st(1))
+     47											 ; После finit - поле RC = 00, т.е.	    +
+     48					 округление к ближайшему целом,
+     49											 ; а надо отбросить дробную часть, т.е.	RC  +
+     50					 := 11.
+     51	00000063  9B D9	3D 0000000Cr			 fstcw cwr
+     52	0000006A  66| 81 0D 0000000Cr +			 or cwr, 11b shl 10
+     53		  0C00
+     54	00000073  D9 2D	0000000Cr			 fldcw cwr
+     55	00000079  D9 C0					 fld st(0)
+     56	0000007B  D9 FC					 frndint			 ; st(0) - целая часть от log2(exp^st(1))
+     57	0000007D  DC E9					 fsub st(1), st(0)		 ; st(1) - вещественная	часть от log2(exp^st+
+Turbo Assembler	 Version 3.1	    22/04/13 16:54:15	    Page 2
+lab0.asm
+
+
+
+     58					 (1))
+     59	0000007F  D9 E8					 fld1
+     60	00000081  D9 FD					 fscale				 ; st(0) - 2^[целая часть от log2(exp^st    +
+     61					 (1))],	st(1) -	мусор
+     62	00000083  DD D9					 fstp st(1)			 ; st(0) - 2^[целая часть от log2(exp^st    +
+     63					 (1))],	st(1) -	вещественная часть от log2(exp^st(1))
+     64	00000085  D9 C9					 fxch st(1)			 ; st(0) - вещественная	часть от log2(exp^st+
+     65					 (1)), st(1) - 2^[целая	часть от log2(exp^st(1))]
+     66	00000087  D9 F0					 f2xm1
+     67	00000089  D9 E8					 fld1
+     68	0000008B  DE C1					 fadd				 ; st(0) - 2^[вещественная часть от log2    +
+     69					 (exp^st(1))], st(1) - 2^[целая	часть от log2(exp^st(1))]
+     70	0000008D  DE C9					 fmulp st(1), st(0)
+     71
+     72	0000008F  DE C9					 fmul				 ;st(0)=exp(a)*5*6 st(1)=[(37+14*5)/cos(4)  +
+     73					 +x*5*6]/[17-4/2]
+     74	00000091  DE C1					 fadd				 ;st(0)=exp(a)*5*6+[(37+14*5)/cos(4)+x*5*6]/+
+     75					 [17-4/2]
+     76	00000093  D9 15	00000008r			 fst y
+     77	00000099				 exit:
+     78	00000099  66| B8 4C00				 mov ax,4c00h
+     79	0000009D  CD 15					 int 21
+     80					 end	 _main
+Turbo Assembler	 Version 3.1	    22/04/13 16:54:15	    Page 3
+Symbol Table
+
+
+
+
+Symbol Name		Type   Value			   Cref	(defined at #)
+
+??DATE			Text   "22/04/13"
+??FILENAME		Text   "lab0	"
+??TIME			Text   "16:54:15"
+??VERSION		Number 030A
+@32BIT			Text   1			   #2
+@CODE			Text   FLAT			   #2
+@CODESIZE		Text   0			   #2
+@CPU			Text   0F0FH			   #1
+@CURSEG			Text   _TEXT			   #3  #13
+@DATA			Text   FLAT			   #2
+@DATASIZE		Text   0			   #2
+@FILENAME		Text   LAB0
+@INTERFACE		Text   00H			   #2
+@MODEL			Text   1			   #2
+@STACK			Text   FLAT			   #2
+@WORDSIZE		Text   4			   #1  #3  #13
+A			Dword  FLAT:0004		   #5  41
+CWR			Word   FLAT:000C		   #8  51  52  54
+EXIT			Near   FLAT:0099		   #77
+MAS			Word   FLAT:000E		   #10	17  19	20  21	24  25	30  31	32  38	40
+X			Dword  FLAT:0000		   #4  26
+Y			Dword  FLAT:0008		   #6  76
+_MAIN			Near   FLAT:0000		   #14	80
+
+Groups & Segments	Bit Size Align	Combine	Class	   Cref	(defined at #)
+
+DGROUP			Group				   #2
+  _DATA			32  001C Dword	Public	DATA	   #2  #3
+FLAT			Group				   2
+_TEXT			32  009F Dword	Public	CODE	   #2  #13
+

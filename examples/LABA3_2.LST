@@ -1,0 +1,132 @@
+Turbo Assembler	 Version 3.1	    22/04/08 10:22:51	    Page 1
+laba3_2.asm
+
+
+
+      1				     masm
+      2	0000			     model small
+      3	0000			     .stack 100h
+      4				     delay macro time
+      5					     local   ext,iter
+      6					     push    cx
+      7					     mov     cx,time
+      8				     ext:
+      9					     push    cx
+     10					     mov     cx,5000
+     11				     iter:
+     12					     loop    iter
+     13					     pop     cx
+     14					     loop    ext
+     15					     pop     cx
+     16				     endm
+     17	0000			     .data
+     18	      =0019		     y equ 25
+     19	      =004F		     x equ 79
+     20	0000			     .code
+     21	0000			     main:
+     22	0000  B8 0000s			     mov ax,@data
+     23	0003  8E D8			     mov ds,ax
+     24	0005  33 C0			     xor ax,ax
+     25	0007  B4 05			     mov ah,5 ;Задание активной	страницы.
+     26	0009  B0 00			     mov al,0
+     27	000B  CD 10			     int 10h
+     28	000D  B9 004F			     mov cx,x
+     29	0010  BA 0000			     mov dx,0
+     30	0013			     cycl1:
+     31	0013  51			     push cx
+     32	0014  B9 0019			     mov cx,y
+     33	0017			     cycl2:
+     34	0017  B4 02			     mov ah,2
+     35	0019  CD 10			     int 10h
+     36	001B  51			     push cx
+     37	001C  B9 0001			     mov cx,1
+     38	001F  B0 04			     mov al,4 ;Задание ASCII-кода символа.
+     39	0021  B4 0A			     mov ah,10 ;Функция	вывода символа.
+     40	0023  CD 10			     int 10h
+     41	0025  59			     pop cx
+     42	0026  FE C6			     inc dh
+     43	0028  E2 ED			     loop cycl2
+     44					     delay 10000
+1    45	002A  51			     push    cx
+1    46	002B  B9 2710			     mov     cx,10000
+1    47	002E			     ??0000:
+1    48	002E  51			     push    cx
+1    49	002F  B9 1388			     mov     cx,5000
+1    50	0032			     ??0001:
+1    51	0032  E2 FE			     loop    ??0001
+1    52	0034  59			     pop     cx
+1    53	0035  E2 F7			     loop    ??0000
+1    54	0037  59			     pop     cx
+     55				     ;
+     56	0038  B6 00			     mov dh,0
+     57	003A  B9 0019			     mov cx,y
+Turbo Assembler	 Version 3.1	    22/04/08 10:22:51	    Page 2
+laba3_2.asm
+
+
+
+     58	003D			     cycl3:
+     59	003D  B4 02			     mov ah,2
+     60	003F  CD 10			     int 10h
+     61	0041  51			     push cx
+     62	0042  B9 0001			     mov cx,1
+     63	0045  B0 00			     mov al,0 ;Задание ASCII-кода символа.
+     64	0047  B4 0A			     mov ah,10 ;Функция	вывода символа.
+     65	0049  CD 10			     int 10h
+     66	004B  59			     pop cx
+     67	004C  FE C6			     inc dh
+     68	004E  E2 ED			     loop cycl3
+     69				     ;
+     70	0050  59			     pop cx
+     71	0051  B6 00			     mov dh,0
+     72	0053  FE C2			     inc dl
+     73	0055  E2 BC			     loop cycl1
+     74	0057			     exit:
+     75	0057  B8 4C00			     mov     ax,4c00h
+     76	005A  CD 21			     int     21h     ;возврат управления операционной системе
+     77				     end main
+Turbo Assembler	 Version 3.1	    22/04/08 10:22:51	    Page 3
+Symbol Table
+
+
+
+
+Symbol Name		Type   Value			   Cref	(defined at #)
+
+??0000			Near   _TEXT:002E		   #47	53
+??0001			Near   _TEXT:0032		   #50	51
+??DATE			Text   "22/04/08"
+??FILENAME		Text   "laba3_2	"
+??TIME			Text   "10:22:51"
+??VERSION		Number 030A
+@32BIT			Text   0			   #2
+@CODE			Text   _TEXT			   #2  #2  #20
+@CODESIZE		Text   0			   #2
+@CPU			Text   0101H
+@CURSEG			Text   _TEXT			   #17	#20
+@DATA			Text   DGROUP			   #2  22
+@DATASIZE		Text   0			   #2
+@FILENAME		Text   LABA3_2
+@INTERFACE		Text   00H			   #2
+@MODEL			Text   2			   #2
+@STACK			Text   DGROUP			   #2
+@WORDSIZE		Text   2			   #17	#20
+CYCL1			Near   _TEXT:0013		   #30	73
+CYCL2			Near   _TEXT:0017		   #33	43
+CYCL3			Near   _TEXT:003D		   #58	68
+EXIT			Near   _TEXT:0057		   #74
+MAIN			Near   _TEXT:0000		   #21	77
+X			Number 004F			   #19	28
+Y			Number 0019			   #18	32  57
+
+Macro Name						   Cref	(defined at #)
+
+DELAY							   #4  44
+
+Groups & Segments	Bit Size Align	Combine	Class	   Cref	(defined at #)
+
+DGROUP			Group				   #2  2  22
+  STACK			16  0100 Para	Stack	STACK	   #3
+  _DATA			16  0000 Word	Public	DATA	   #2  #17
+_TEXT			16  005C Word	Public	CODE	   #2  2  #20  20
+

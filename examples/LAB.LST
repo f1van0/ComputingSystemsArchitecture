@@ -1,0 +1,74 @@
+Turbo Assembler	 Version 3.1	    06/02/09 11:30:23	    Page 1
+lab.asm
+
+
+
+      1				     masm
+      2	0000			     model small
+      3	0000			     .stack 256
+      4	0000			     .data
+      5	      =0009		     len equ 9
+      6	0000  01 02 03 04 05 06	07+  a db 1,2,3,4,5,6,7,8,9,10
+      7	      08 09 0A
+      8	000A			     .code
+      9	0000  B8 0000s		     start: mov	ax,@data
+     10	0003  8E D8			    mov	ds,ax
+     11	0005  B9 0009			    mov	cx,len
+     12	0008  33 F6			    xor	si,si
+     13	000A  8B C6		     cycl1: mov	ax, si
+     14	000C  8B F8		     mov di, ax
+     15	000E  8A 9D 0000r	     cycl2: mov	bl, a[di]
+     16	0012  38 9C 0000r	     cmp a[si],bl
+     17	0016  73 0C		     jae M1
+     18	0018  8A 84 0000r	     mov al, a[si]
+     19	001C  88 9C 0000r	     mov a[si],	bl
+     20	0020  88 85 0000r	     mov a[di],	al
+     21	0024			     M1:
+     22	0024  47		     inc di
+     23	0025  83 FF 09		     cmp di, len
+     24	0028  7E E4		     jle cycl2
+     25	002A  46		     inc si
+     26	002B  E2 DD		     loop cycl1
+     27	002D			     exit:
+     28	002D  B8 4C00			 mov ax, 4c00h
+     29	0030  CD 21		     int 21h
+     30				     end start
+Turbo Assembler	 Version 3.1	    06/02/09 11:30:23	    Page 2
+Symbol Table
+
+
+
+
+Symbol Name		Type   Value			   Cref	(defined at #)
+
+??DATE			Text   "06/02/09"
+??FILENAME		Text   "lab	"
+??TIME			Text   "11:30:23"
+??VERSION		Number 030A
+@32BIT			Text   0			   #2
+@CODE			Text   _TEXT			   #2  #2  #8
+@CODESIZE		Text   0			   #2
+@CPU			Text   0101H
+@CURSEG			Text   _TEXT			   #4  #8
+@DATA			Text   DGROUP			   #2  9
+@DATASIZE		Text   0			   #2
+@FILENAME		Text   LAB
+@INTERFACE		Text   00H			   #2
+@MODEL			Text   2			   #2
+@STACK			Text   DGROUP			   #2
+@WORDSIZE		Text   2			   #4  #8
+A			Byte   DGROUP:0000		   #6  15  16  18  19  20
+CYCL1			Near   _TEXT:000A		   #13	26
+CYCL2			Near   _TEXT:000E		   #15	24
+EXIT			Near   _TEXT:002D		   #27
+LEN			Number 0009			   #5  11  23
+M1			Near   _TEXT:0024		   17  #21
+START			Near   _TEXT:0000		   #9  30
+
+Groups & Segments	Bit Size Align	Combine	Class	   Cref	(defined at #)
+
+DGROUP			Group				   #2  2  9
+  STACK			16  0100 Para	Stack	STACK	   #3
+  _DATA			16  000A Word	Public	DATA	   #2  #4
+_TEXT			16  0032 Word	Public	CODE	   #2  2  #8  8
+

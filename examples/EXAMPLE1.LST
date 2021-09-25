@@ -1,0 +1,78 @@
+Turbo Assembler	 Version 3.1	    05/10/07 09:45:21	    Page 1
+example1.asm
+
+
+
+      1	0000			     model small
+      2	0000			     .stack  100h
+      3	0000			     .data
+      4	      =000A		     len equ 10	     ;количество элементов в mas
+      5	0000  01 0B 09 08 03 07	08+  mas     db	     1,11,9,8,3,7,8,0,2,6
+      6	      00 02 06
+      7	000A  0A*(??)		     res   db	 10 dup(?)
+      8	0014			     .code
+      9	0000			     start:
+     10	0000  B8 0000s			     mov     ax,@data
+     11	0003  8E D8			     mov     ds,ax
+     12	0005  B9 000A			     mov     cx,len  ;длину поля mas в cx
+     13	0008  33 F6			     xor si,si
+     14	000A  E3 25			     jcxz    exit    ;проверка cx на 0,	если 0,	то на выход
+     15	000C			     cycl:
+     16	000C  33 C0			     xor ax,ax
+     17	000E  80 BC 0000r 0A		     cmp     mas[si],10	     ;сравнить очередной элемент mas с 10
+     18	0013  77 0F			     ja	 m1  ;если >10,	то на m1
+     19	0015  8A 84 0000r		     mov al,mas[si]
+     20	0019  F6 A4 0000r		     mul mas[si]     ;квадрат
+     21	001D  88 84 000Ar		     mov res[si],al
+     22	0021  EB 0B 90			     jmp nxt
+     23	0024			     m1:
+     24	0024  B0 0A			     mov al,10
+     25	0026  02 84 0000r		     add al,mas[si]
+     26	002A  88 84 000Ar		     mov res[si],al
+     27	002E			     nxt:
+     28	002E  46			     inc     si	     ;перейти к	следующему элементу
+     29	002F  E2 DB			     loop cycl
+     30	0031			     exit:
+     31	0031  B8 4C00			     mov     ax,4c00h
+     32	0034  CD 21			     int     21h     ;возврат управления операционной системе
+     33				     end     start
+Turbo Assembler	 Version 3.1	    05/10/07 09:45:21	    Page 2
+Symbol Table
+
+
+
+
+Symbol Name		Type   Value			   Cref	(defined at #)
+
+??DATE			Text   "05/10/07"
+??FILENAME		Text   "example1"
+??TIME			Text   "09:45:21"
+??VERSION		Number 030A
+@32BIT			Text   0			   #1
+@CODE			Text   _TEXT			   #1  #1  #8
+@CODESIZE		Text   0			   #1
+@CPU			Text   0101H
+@CURSEG			Text   _TEXT			   #3  #8
+@DATA			Text   DGROUP			   #1  10
+@DATASIZE		Text   0			   #1
+@FILENAME		Text   EXAMPLE1
+@INTERFACE		Text   00H			   #1
+@MODEL			Text   2			   #1
+@STACK			Text   DGROUP			   #1
+@WORDSIZE		Text   2			   #3  #8
+CYCL			Near   _TEXT:000C		   #15	29
+EXIT			Near   _TEXT:0031		   14  #30
+LEN			Number 000A			   #4  12
+M1			Near   _TEXT:0024		   18  #23
+MAS			Byte   DGROUP:0000		   #5  17  19  20  25
+NXT			Near   _TEXT:002E		   22  #27
+RES			Byte   DGROUP:000A		   #7  21  26
+START			Near   _TEXT:0000		   #9  33
+
+Groups & Segments	Bit Size Align	Combine	Class	   Cref	(defined at #)
+
+DGROUP			Group				   #1  1  10
+  STACK			16  0100 Para	Stack	STACK	   #2
+  _DATA			16  0014 Word	Public	DATA	   #1  #3
+_TEXT			16  0036 Word	Public	CODE	   #1  1  #8  8
+
