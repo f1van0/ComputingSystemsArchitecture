@@ -10,14 +10,18 @@ model small
 	n      db 2
 	;...
 .code
-start:
-mov ax, @data
-mov ds, ax
-xor ax, ax
+	start:  
+	        mov ax, @data
+	        mov ds, ax
+	        xor ax, axtrix[si]
 
-findMax:
-
-loop findMax
+	findMax: @data
+;mov ds, ax
+;xor ax, ax
+;
+;findMax:
+;
+;loop findMax
 end start
 
 ;насчет tasm, там в дампе сдвиг изначально стоит и нужно нажать там пкм и ввести sb 0000
