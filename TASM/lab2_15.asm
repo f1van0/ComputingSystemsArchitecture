@@ -1,22 +1,18 @@
 model tiny
 .stack 100h
 .data
-	;в качестве результата подпрограммы должен быть массив, количество элементов которого = количество строк в двумерном массиве
-	;в функцию просто передаю начало новой строки этой матрице с помощью команды lea
-	;двумерный массив можно представить в таком виде:
-	min    db ?
-	m      db 6
-	n      db 4
-	matrix db 1, 7, 3, 9, 4, 8
+	MIN    db ?
+	COLS      db 6
+	ROWS      db 4
+	Matrix db 1, 7, 3, 9, 4, 8
 		   db 3, 1, 5, 4, 2, 1
 		   db 4, 10, 3, 13, 2, 5
 		   db 11, 4, 15, 8, 1, 9
-	;...
 .code
 	org     100h
 
 ;Процедура поиска максимального значения в строке матрицы
-findMax PROC 
+findMaxElement PROC 
 	xor ax, ax ; пусть ax выступает переменной, в которой будет хранится максимальное значение
 	MOV CX, 6 ; определяем количество итераций, в нашем случае их 6
 	findMaxLoop: ; цикл поиска максимального значения
@@ -28,63 +24,36 @@ findMax PROC
 		INC BX ; смещаем адрес на следующий элемент
 	LOOP findMaxLoop
 RET
-findMax ENDP
+findMaxElement ENDP
 
 	start:
 	    mov AX, @data
 	    mov DS, AX
 		xor AX, AX
 
-		LEA  BX, matrix
-		CALL findMax
-		MOV min, AL
+		LEA  BX, Matrix ; Получение адреса первого элемента Matrix
+		CALL findMaxElement
+		MOV MIN, AL
 
 		XOR CX, CX
-		DEC n
-		MOV ah, n
-		MOV CL, ah
+		DEC ROWS ; так как 1 строка уже пройдена, осталось пройти ROWS - 1 строк
+		MOV AH, ROWS
+		MOV CL, AH
 
 		XOR AX, AX
-		loopLines:
-			PUSH CX
-			;INC BX
-			CALL findMax
-			CMP AL, min 
-			JG exit1 ; если да, то 
-				mov min, AL ; записываем значение по адресу bx в регистр al
+		loopRows:
+			PUSH CX ; сохранение значения счетчика CX, чтобы его не потерять
+			CALL findMaxElement
+			CMP AL, MIN ; сравнение значения, пришедшего из функции findMaxElement, и MIN
+			JG exit1 ; если MIN больше AL да, то 
+				mov MIN, AL ; записываем значение AL в MIN
 			exit1:
 			POP CX
-		LOOP loopLines
+		LOOP loopRows
 
 		XOR AX, AX
-		MOV AL, min
-
-;		;mov bx, matrix ; получение адреса (2 байта) первого элемента в матрице
-;		
-;		mov cx, 6 ;Подготавливаем счётчик si, по нему будем пробегать,чтобы получать элементы массива
-;		mov ax, 1
-;		mul cx
-;		mov si, ax
-;		xor ax, ax
-;		;;;;Закинем в стек элементы
-;		findMaxLoop:
-;			cmp al, matrix[si] ; сравнивается 1 байтового значения регистра al и 1 байтового значения по адресу, записанному в bx
-;			jg exit ; если да, то 
-;				mov al, matrix[si] ; записываем значение по адресу bx в регистр al
-;			exit:
-;
-;			sub si, 1
-;		loop findMaxLoop
-;		
-;		mov cx, 6 ; определяем количество итераций, в нашем случае их 6
-;		
-;		;push bx ; запомнили адрес первого элемента
-;		;получение первого максимального значения, который запишется в min для последующих итераций по матрице
-;	    ;call findMax
-;
+		MOV AL, MIN ; Минимальное значение среди максимальных записывается в AL
 
 mov ax, 4c00h
 int 21h
 end start
-
-;насчет tasm, там в дампе сдвиг изначально стоит и нужно нажать там пкм и ввести sb 0000
