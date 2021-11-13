@@ -5,11 +5,13 @@ model small
 tmp dd ?
 x dd 250.0
 y dd 2.0
-a dd 400.0
+a dd 1
+c1 dd 1
+c2 dd 2
 t1 dd ?
 t2 dd ?
 t3 dd ? 
-somePower dd 0.1617;
+somePower dd 0.99;
 
 .code	
 org 100h 
@@ -25,16 +27,16 @@ FNINIT
 
 ;COUNT E
 FLDL2E
-mov eax, 1
-mov tmp, eax
-FISUB tmp
+;mov eax, 1
+;mov tmp, eax
+FISUB c1
 F2XM1
-mov eax, 1
-mov tmp, eax
-FIADD tmp
-mov eax, 2
-mov tmp, eax
-FIMUL tmp
+;mov eax, 1
+;mov tmp, eax
+FIADD c1
+;mov eax, 2
+;mov tmp, eax
+FIMUL c2
 FST tmp
 ;COUNT EPOWER < 1
 ;402DF8
@@ -61,6 +63,7 @@ mov tmp, eax
 FIADD tmp
 FMUL
 FST tmp
+
 
 mov ax, 4c00h
 int 21h
