@@ -4,11 +4,11 @@ model small
 .data
 x dd 4
 a dd 0.17
-;eConst dd 2.718
 temp dd ?
 temp2 dd ?
 c1 dd 1
 c2 dd 2
+c3 dd 3
 c4 dd 4
 c5 dd 5
 c6 dd 6
@@ -29,9 +29,9 @@ mov ds,ax
 FNINIT ;Это чтобы обновить всё для работы с сопроцессором
 
 ;подсчет знаменателя 2+6*cos(x - a)
-FILD x
+FILD c4
 FSUB a
-FCOS
+FCOS ;-0.77225882
 FIMUL c6
 FIADD c2
 
@@ -39,8 +39,6 @@ FIADD c2
 FILD c4 ;знаменатель из ST0 перешел в ST1
 FIMUL c5
 FIADD c36
-
-
 
 ;подсчет первой части числителя (36 + 4*5)/(2+6*cos(x - a)) и сохранение во временную переменную temp
 FDIV ST(0), ST(1)
@@ -67,7 +65,7 @@ FIST temp2
 ;подсчет второй части знаменателя 12*sin(x+a)
 FILD x
 FADD a
-FSIN
+FSIN ;-0.8564779
 FIMUL c12
 
 ;сложение двух частей знаменателя
@@ -97,6 +95,10 @@ FIADD c1
 FMUL
 FST temp2
 
+;подсчет числителя (3*e^(x*a)+4)
+FIMUL c3
+FIADD c4
+
 ;подсчет знаменателя 12 - 7
 FILD c12
 FISUB c7
@@ -113,6 +115,8 @@ FIMUL c6
 FLD temp
 FSUB ST(0), ST(1)
 FST temp
+
+;-87.23249536...
 
 mov ax, 4c00h
 int 21h

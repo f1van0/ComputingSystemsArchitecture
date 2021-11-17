@@ -12,19 +12,10 @@ strEnterB db 'Enter B: $'
 strAnswer db 'A + B = $'
 endline db 10,13, '$'
 
-strTestA db '4$'
-strTestB db '4$'
-
 ;Данные по значению A
-strIntA label byte
-maxLenIntA db 4
-lenIntA db ?
 valueIntA dw ?;4 Dup('$')
 
-;Данные по значению A
-strIntB label byte
-maxLenIntB db 4
-lenIntB db ?
+;Данные по значению B
 valueIntB dw ?;4 Dup('$')
 
 answerValue dw ?
@@ -140,28 +131,10 @@ start: ; функция start (с неё всё начинается)
     add al, dl
     mov dl, al
 
+    ;напечатать результат
     call PrintNumber
-    ;jmp PrintNumber
-
-    ;mov ah, 09h
-    ;mov dx, offset endline ;переход на новую строку
-    ;int 21h
-
-    ;mov ah, 09h
-    ;mov dx, offset strAnswer ;переход на новую строку
-    ;int 21h
-
-
-
     ; конец программы
     mov ax, 4c00h
     int 21h
-
- ;   PrintNumber:
- ;       ;число находится в регистре dh
- ;       
- ;       ret
- ;   end PrintNumber
-;
 end start
 
