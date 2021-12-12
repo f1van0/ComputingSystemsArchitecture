@@ -185,23 +185,17 @@ start: ; функция start (с неё всё начинается)
    	MOV   DX,  offset path	;Путь к файлу
    	INT   21h		        ;Вызов функции 3Dh
 
-    MOV   AH,  40h	        ;Записываем в файл
-   	mov   BX, identf		        ;Идентификатор файла
-   	MOV   DX,  15	;Адрес буфера с данными
-   	MOV   CX,  1	    	;Будем записывать значение из temp
-   	INT   21h	        	;Вызов функции 40h
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
 
-    ;PUSH AX
-    ;PUSH BX
-    ;PUSH CX
-    ;PUSH DX
-;
-    ;call PrintNumber
-;
-    ;POP DX
-    ;POP BX
-    ;POP CX
-    ;POP AX
+    call PrintNumber
+
+    POP DX
+    POP BX
+    POP CX
+    POP AX
 
     ;Открытие файла на чтение
    	MOV   AX,  3D00h    	;Открываем файл для чтения
