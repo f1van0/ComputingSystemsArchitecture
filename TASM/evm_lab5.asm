@@ -22,7 +22,7 @@ valueIntB dw ?
 answer db ?
 
 ;Путь к файлу
-path db "testasm.txt", 0
+path db "testasm123.txt", 0
 
 ;Буффер для вывода
 buf	DB ?	
